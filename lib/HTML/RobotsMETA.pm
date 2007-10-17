@@ -1,11 +1,11 @@
-# $Id: /mirror/perl/HTML-RobotsMETA/trunk/lib/HTML/RobotsMETA.pm 3528 2007-10-16T09:36:47.480863Z daisuke  $
+# $Id: /mirror/perl/HTML-RobotsMETA/trunk/lib/HTML/RobotsMETA.pm 3537 2007-10-17T15:24:52.884558Z daisuke  $
 
 package HTML::RobotsMETA;
 use strict;
 use warnings;
 use HTML::Parser;
 use HTML::RobotsMETA::Rules;
-our $VERSION = '0.00001';
+our $VERSION = '0.00002';
 our @ISA = qw(HTML::Parser);
 
 sub new
@@ -40,7 +40,7 @@ sub _parse_start_h
     # the "name" attribute may contain either "robots", or user-specified
     # robot name, which is specific to a particular crawler
     # XXX - Handle the specific agent part later
-    return unless $attr->{name} =~ /^robots$/;
+    return unless defined $attr->{name} && $attr->{name} =~ /^robots$/;
 
     my %directives;
     # Allowed values

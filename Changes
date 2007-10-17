@@ -1,5 +1,9 @@
 Changes
 =======
 
+0.00002 - Oct 18 2007
+  - Silence warnings
+  - Put minimum perl version requirements
+
 0.00001 - Oct 16 2007
   - Initial release
