@@ -1,6 +1,9 @@
 Changes
 =======
 
+0.00003 - Oct 29 2007
+  - Don't die even if rules turnes out to be undef
+
 0.00002 - Oct 18 2007
   - Silence warnings
   - Put minimum perl version requirements

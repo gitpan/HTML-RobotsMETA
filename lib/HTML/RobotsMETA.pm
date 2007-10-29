@@ -1,11 +1,11 @@
-# $Id: /mirror/perl/HTML-RobotsMETA/trunk/lib/HTML/RobotsMETA.pm 3537 2007-10-17T15:24:52.884558Z daisuke  $
+# $Id: /mirror/perl/HTML-RobotsMETA/trunk/lib/HTML/RobotsMETA.pm 4223 2007-10-29T06:42:26.630870Z daisuke  $
 
 package HTML::RobotsMETA;
 use strict;
 use warnings;
 use HTML::Parser;
 use HTML::RobotsMETA::Rules;
-our $VERSION = '0.00002';
+our $VERSION = '0.00003';
 our @ISA = qw(HTML::Parser);
 
 sub new
@@ -22,12 +22,12 @@ sub new
 sub parse_rules
 {
     my $self = shift;
-    delete $self->{rules};
+    $self->{rules} = [];
     $self->parse(@_);
     $self->eof;
 
     # merge rules that were found in this document
-    my %directives = (map { %$_ } @{ delete $self->{rules} });
+    my %directives = (map { %$_ } @{ delete $self->{rules} || [] });
     return HTML::RobotsMETA::Rules->new(%directives);
 }
 
