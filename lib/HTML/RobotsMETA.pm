@@ -1,33 +1,53 @@
 # $Id: /mirror/perl/HTML-RobotsMETA/trunk/lib/HTML/RobotsMETA.pm 4223 2007-10-29T06:42:26.630870Z daisuke  $
+# 
+# Copyright (c) 2007 Daisuke Maki <daisuke@endeworks.jp>
+# All rights reserved.
 
 package HTML::RobotsMETA;
 use strict;
 use warnings;
 use HTML::Parser;
 use HTML::RobotsMETA::Rules;
-our $VERSION = '0.00003';
-our @ISA = qw(HTML::Parser);
+our $VERSION = '0.00004';
 
 sub new
 {
     my $class = shift;
-    my $self = $class->SUPER::new(
-        api_version => 3,
-        start_h => [\&_parse_start_h, "self, tagname, attr"]
-    );
-
+    my $self  = bless {}, $class;
     return $self;
+}
+
+sub parser
+{
+    my $self = shift;
+    return $self->{parser} ||= HTML::Parser->new(
+        api_version => 3,
+        $self->get_parser_callbacks
+    );
+}
+
+sub get_parser_callbacks
+{
+    my $self = shift;
+    return (
+        start_h => [ sub { $self->_parse_start_h(@_) }, "tagname, attr" ]
+    );
 }
 
 sub parse_rules
 {
     my $self = shift;
-    $self->{rules} = [];
-    $self->parse(@_);
-    $self->eof;
+
+    my @rules;
+    local $self->{rules} = \@rules;
+
+    my $parser = $self->parser();
+    
+    $parser->parse(@_);
+    $parser->eof;
 
     # merge rules that were found in this document
-    my %directives = (map { %$_ } @{ delete $self->{rules} || [] });
+    my %directives = (map { %$_ } @rules);
     return HTML::RobotsMETA::Rules->new(%directives);
 }
 
@@ -61,7 +81,6 @@ sub _parse_start_h
         $directives{$1}++;
     }
 
-    $self->{rules} ||= [];
     push @{$self->{rules}}, \%directives;
 }
 
@@ -131,6 +150,14 @@ Creates a new HTML::RobotsMETA parser. Takes no arguments
 
 Parses an HTML string for META tags, and returns an instance of
 HTML::RobotsMETA::Rules object, which you can use in conditionals later
+
+=head2 parser
+
+Returns the HTML::Parser instance to use.
+
+=head2 get_parser_callbacks
+
+Returns callback specs to be used in HTML::Parser constructor. 
 
 =head1 TODO
 
